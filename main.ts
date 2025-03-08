@@ -12,12 +12,13 @@ export default class GVPlugin extends Plugin {
 	async onload() {
 		await this.loadSettings();
 
-		type Engine = "circo" | "dot" | "fdp" | "sfdp" | "neato" | "osage" | "patchwork" | "twopi" | "nop" | "nop2";
+		// possible layouts: circo | dot | fdp | sfdp | neato | osage | patchwork | twopi | nop | nop2
 		this.graphviz = await Graphviz.load();
 
 		let renderer = (source: string, el: HTMLElement, ctx: any) => {
 			try {
-				const svg = this.graphviz.dot(source);
+				let svg = this.graphviz.dot(source);
+				svg = svg.replace(/<svg width="([^"]+)"/, '<svg width="min($1,100%)"');
 				let div = el.createEl("div", { cls: "graphviz" });
 				div.innerHTML = svg;
 			} catch (err) {
